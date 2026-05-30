@@ -1,0 +1,19 @@
+.env
+
+# Go build/test artifacts
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+
+# Go workspace and tooling
+/vendor/
+
+# Logs
+*.log
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
