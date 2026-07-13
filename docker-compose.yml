@@ -6,9 +6,12 @@ services:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
     environment:
-      DB_DSN: "barter:barter@tcp(db:3306)/barterswap?parseTime=true"
+      APP_ENV: ${APP_ENV}
+      APP_PORT: ${APP_PORT}
+      DB_DSN: "${DB_USER}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_NAME}?parseTime=true"
+      LOG_LEVEL: ${LOG_LEVEL}
     ports:
-      - "8080:8080"
+      - "${APP_PORT}:${APP_PORT}"
     volumes:
       - .:/app
     depends_on:
@@ -17,14 +20,15 @@ services:
   db:
     image: mysql:8.4
     environment:
-      MYSQL_DATABASE: barterswap
-      MYSQL_USER: barter
-      MYSQL_PASSWORD: barter
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: root
     ports:
-      - "3306:3306"
+      - "${DB_PORT}:3306"
     volumes:
       - db_data:/var/lib/mysql
+      - ./initdb.d:/docker-entrypoint-initdb.d
 
 volumes:
   db_data:
