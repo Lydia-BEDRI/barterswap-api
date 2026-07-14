@@ -1,5 +1,7 @@
 -- Test data for BarterSwap
 
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 INSERT INTO users (pseudo, bio, ville, credit_balance) VALUES
 ('alice', 'Développeuse passionnée', 'Paris', 10),
 ('bob', 'Bricoleur amateur', 'Lyon', 10),
