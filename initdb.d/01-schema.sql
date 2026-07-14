@@ -1,5 +1,7 @@
 -- BarterSwap Database Schema for MySQL
 
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
   id INT PRIMARY KEY AUTO_INCREMENT,

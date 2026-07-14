@@ -110,7 +110,7 @@ func (s *Store) GetUserSkills(ctx context.Context, userID int) ([]Skill, error) 
 	}
 	defer rows.Close()
 
-	var skills []Skill
+	skills := make([]Skill, 0)
 	for rows.Next() {
 		var skill Skill
 		if err := rows.Scan(&skill.Nom, &skill.Niveau); err != nil {
