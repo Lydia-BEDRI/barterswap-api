@@ -21,6 +21,7 @@ func (a *App) Routes() http.Handler {
 	mux.HandleFunc("GET /healthz", a.handleHealth)
 	a.registerUserRoutes(mux)
 	a.registerServiceRoutes(mux)
+	a.registerExchangeRoutes(mux)
 	return mux
 }
 
@@ -52,6 +53,8 @@ func writeError(w http.ResponseWriter, err error) {
 	case errors.Is(err, ErrInvalidInput):
 		status = http.StatusBadRequest
 	case errors.Is(err, ErrDuplicateValue):
+		status = http.StatusConflict
+	case errors.Is(err, ErrConflict):
 		status = http.StatusConflict
 	case errors.Is(err, ErrForbidden):
 		status = http.StatusForbidden
