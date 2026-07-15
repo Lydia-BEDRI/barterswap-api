@@ -7,4 +7,5 @@ var (
 	ErrInvalidInput   = errors.New("invalid input")
 	ErrForbidden      = errors.New("forbidden")
 	ErrDuplicateValue = errors.New("duplicate value")
+	ErrConflict       = errors.New("conflict")
 )
