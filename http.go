@@ -20,6 +20,7 @@ func (a *App) Routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", a.handleHealth)
 	a.registerUserRoutes(mux)
+	a.registerServiceRoutes(mux)
 	return mux
 }
 
@@ -77,4 +78,18 @@ func sameAuthenticatedUser(r *http.Request, userID int) bool {
 	}
 	authenticatedID, err := strconv.Atoi(header)
 	return err == nil && authenticatedID == userID
+}
+
+func authenticatedUserID(r *http.Request) (int, error) {
+	header := r.Header.Get("X-User-ID")
+	if header == "" {
+		return 0, ErrForbidden
+	}
+
+	id, err := strconv.Atoi(header)
+	if err != nil || id <= 0 {
+		return 0, fmt.Errorf("%w: invalid X-User-ID", ErrInvalidInput)
+	}
+
+	return id, nil
 }
