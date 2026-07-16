@@ -8,14 +8,17 @@ import (
 	"strconv"
 )
 
+// App groups the HTTP routes and the storage layer.
 type App struct {
 	store *Store
 }
 
+// NewApp creates an application using the provided store.
 func NewApp(store *Store) *App {
 	return &App{store: store}
 }
 
+// Routes returns the HTTP handler with all API routes and middlewares.
 func (a *App) Routes() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /healthz", a.handleHealth)

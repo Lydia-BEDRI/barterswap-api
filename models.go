@@ -1,6 +1,6 @@
 package main
 
-// User
+// User represents a BarterSwap account with its public profile and credits.
 type User struct {
 	ID            int     `json:"id"`
 	Pseudo        string  `json:"pseudo"`
@@ -11,13 +11,13 @@ type User struct {
 	CreatedAt     string  `json:"created_at"`
 }
 
-// Skill
+// Skill describes one competency declared by a user.
 type Skill struct {
 	Nom    string `json:"nom"`
 	Niveau string `json:"niveau"`
 }
 
-// Service
+// Service represents a published skill exchange offer.
 type Service struct {
 	ID           int    `json:"id"`
 	ProviderID   int    `json:"provider_id"`
@@ -31,7 +31,7 @@ type Service struct {
 	CreatedAt    string `json:"created_at"`
 }
 
-// Exchange
+// Exchange represents a service request between two users.
 type Exchange struct {
 	ID          int    `json:"id"`
 	ServiceID   int    `json:"service_id"`
@@ -42,7 +42,7 @@ type Exchange struct {
 	UpdatedAt   string `json:"updated_at"`
 }
 
-// CreditTransaction
+// CreditTransaction records one credit movement in the time bank ledger.
 type CreditTransaction struct {
 	ID         int    `json:"id"`
 	UserID     int    `json:"user_id"`
@@ -52,7 +52,7 @@ type CreditTransaction struct {
 	CreatedAt  string `json:"created_at"`
 }
 
-// Review
+// Review represents feedback left after a completed exchange.
 type Review struct {
 	ID          int    `json:"id"`
 	ExchangeID  int    `json:"exchange_id"`
@@ -63,7 +63,7 @@ type Review struct {
 	CreatedAt   string `json:"created_at"`
 }
 
-// UserStats
+// UserStats groups dashboard indicators for one user.
 type UserStats struct {
 	UserID            int     `json:"user_id"`
 	ServicesActifs    int     `json:"services_actifs"`
