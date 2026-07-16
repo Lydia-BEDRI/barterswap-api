@@ -48,6 +48,19 @@ curl -X POST http://localhost:15001/api/exchanges/1/review \
   -d '{"note":5,"commentaire":"Très bon échange"}'
 ```
 
+## Statistiques utilisateur
+
+`GET /api/users/{id}/stats` retourne le nombre de services actifs, le nombre
+d'échanges terminés auxquels l'utilisateur a participé, son solde disponible,
+sa moyenne et son nombre d'avis reçus, ainsi que ses crédits gagnés et dépensés.
+
+Les crédits gagnés correspondent aux écritures `earn` et les crédits dépensés à
+la valeur absolue des écritures `spend` du journal de transactions.
+
+```bash
+curl http://localhost:15001/api/users/1/stats
+```
+
 ## Lancer avec Docker
 
 Le fichier `docker-compose.yml` crée 2 services :
@@ -80,8 +93,8 @@ go test -v -cover ./...
 ```
 
 Les tests d'intégration couvrent le blocage, le transfert, le remboursement,
-deux acceptations concurrentes et les endpoints d'avis. Ils s'activent avec une
-base MySQL de test :
+deux acceptations concurrentes, les endpoints d'avis et les statistiques. Ils
+s'activent avec une base MySQL de test :
 
 ```powershell
 $env:TEST_DB_DSN = "barter:barter@tcp(127.0.0.1:3307)/barterswap?parseTime=true&charset=utf8mb4"
