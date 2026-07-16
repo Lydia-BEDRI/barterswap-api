@@ -43,7 +43,7 @@ qu'un avis par échange et aucun avis ne peut être ajouté avant le statut
 
 ```bash
 curl -X POST http://localhost:15001/api/exchanges/1/review \
-  -H "X-User-ID: 2" \
+  -H "X-UserID: 2" \
   -H "Content-Type: application/json" \
   -d '{"note":5,"commentaire":"Très bon échange"}'
 ```

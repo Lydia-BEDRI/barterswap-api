@@ -24,7 +24,13 @@ func (a *App) Routes() http.Handler {
 	a.registerExchangeRoutes(mux)
 	a.registerReviewRoutes(mux)
 	a.registerStatsRoutes(mux)
-	return mux
+	return chain(
+		mux,
+		recoveryMiddleware,
+		loggingMiddleware,
+		corsMiddleware,
+		authMiddleware,
+	)
 }
 
 func (a *App) handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +60,8 @@ func writeError(w http.ResponseWriter, err error) {
 	switch {
 	case errors.Is(err, ErrInvalidInput):
 		status = http.StatusBadRequest
+	case errors.Is(err, ErrInvalidUserID):
+		status = http.StatusBadRequest
 	case errors.Is(err, ErrDuplicateValue):
 		status = http.StatusConflict
 	case errors.Is(err, ErrConflict):
@@ -79,23 +87,23 @@ func pathID(w http.ResponseWriter, r *http.Request) (int, bool) {
 }
 
 func sameAuthenticatedUser(r *http.Request, userID int) bool {
-	header := r.Header.Get("X-User-ID")
-	if header == "" {
-		return false
-	}
-	authenticatedID, err := strconv.Atoi(header)
+	authenticatedID, err := authenticatedUserID(r)
 	return err == nil && authenticatedID == userID
 }
 
 func authenticatedUserID(r *http.Request) (int, error) {
-	header := r.Header.Get("X-User-ID")
+	if id, ok := r.Context().Value(authenticatedUserIDKey{}).(int); ok {
+		return id, nil
+	}
+
+	header := r.Header.Get("X-UserID")
 	if header == "" {
 		return 0, ErrForbidden
 	}
 
 	id, err := strconv.Atoi(header)
 	if err != nil || id <= 0 {
-		return 0, fmt.Errorf("%w: invalid X-User-ID", ErrInvalidInput)
+		return 0, ErrInvalidUserID
 	}
 
 	return id, nil

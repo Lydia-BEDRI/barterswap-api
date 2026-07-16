@@ -141,7 +141,7 @@ func performReviewRequest(
 	t.Helper()
 	request := httptest.NewRequest(method, path, strings.NewReader(body))
 	if userID > 0 {
-		request.Header.Set("X-User-ID", fmt.Sprintf("%d", userID))
+		request.Header.Set("X-UserID", fmt.Sprintf("%d", userID))
 	}
 	recorder := httptest.NewRecorder()
 	handler.ServeHTTP(recorder, request)

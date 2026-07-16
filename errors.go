@@ -9,4 +9,5 @@ var (
 	ErrDuplicateValue      = errors.New("duplicate value")
 	ErrConflict            = errors.New("conflict")
 	ErrInsufficientCredits = errors.New("insufficient credits")
+	ErrInvalidUserID       = errors.New("invalid X-UserID")
 )
