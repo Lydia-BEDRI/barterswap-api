@@ -1,4 +1,4 @@
-# BarterSwap — API d'échange de compétences
+# BarterSwap - API d'échange de compétences
 
 BarterSwap est une API REST qui permet à des particuliers d'échanger des
 compétences sans argent. Le temps est représenté par des crédits : rendre un
