@@ -256,7 +256,7 @@ func validateServiceInput(titre string, categorie string, dureeMinutes int, cred
 func validServiceCategory(category string) bool {
 	switch category {
 	case "Informatique", "Jardinage", "Bricolage", "Cuisine", "Musique",
-		"Langues", "Sport", "Tutorat", "DÃ©mÃ©nagement", "Photographie",
+		"Langues", "Sport", "Tutorat", "Déménagement", "Photographie",
 		"Animalier", "Couture", "Autre":
 		return true
 	default:
