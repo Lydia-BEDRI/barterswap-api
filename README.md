@@ -29,6 +29,25 @@ Le changement de statut, la mise à jour du solde et l'écriture du journal sont
 effectués dans une même transaction SQL. Le verrouillage de la ligne utilisateur
 empêche deux acceptations concurrentes de dépenser les mêmes crédits.
 
+## Avis
+
+| Méthode | Route | Description |
+| --- | --- | --- |
+| `POST` | `/api/exchanges/{id}/review` | Noter l'autre participant d'un échange terminé |
+| `GET` | `/api/users/{id}/reviews` | Lister les avis reçus par un utilisateur |
+| `GET` | `/api/services/{id}/reviews` | Lister les avis laissés au prestataire pour ce service |
+
+La note doit être comprise entre 1 et 5. Chaque participant ne peut publier
+qu'un avis par échange et aucun avis ne peut être ajouté avant le statut
+`completed`.
+
+```bash
+curl -X POST http://localhost:15001/api/exchanges/1/review \
+  -H "X-User-ID: 2" \
+  -H "Content-Type: application/json" \
+  -d '{"note":5,"commentaire":"Très bon échange"}'
+```
+
 ## Lancer avec Docker
 
 Le fichier `docker-compose.yml` crée 2 services :
@@ -60,8 +79,9 @@ Les tests unitaires ne nécessitent pas de base de données :
 go test -v -cover ./...
 ```
 
-Les tests d'intégration couvrent le blocage, le transfert, le remboursement et
-deux acceptations concurrentes. Ils s'activent avec une base MySQL de test :
+Les tests d'intégration couvrent le blocage, le transfert, le remboursement,
+deux acceptations concurrentes et les endpoints d'avis. Ils s'activent avec une
+base MySQL de test :
 
 ```powershell
 $env:TEST_DB_DSN = "barter:barter@tcp(127.0.0.1:3307)/barterswap?parseTime=true&charset=utf8mb4"
