@@ -7,10 +7,12 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
+// Store wraps database access for the application.
 type Store struct {
 	db *sql.DB
 }
 
+// NewStore creates a Store backed by db.
 func NewStore(db *sql.DB) *Store {
 	return &Store{db: db}
 }
