@@ -66,12 +66,12 @@ func (s *Store) CreateExchange(ctx context.Context, requesterID int, input Creat
 		return Exchange{}, err
 	}
 
-	balance, err := creditBalance(ctx, tx, requesterID)
+	balance, err := lockCreditBalance(ctx, tx, requesterID)
 	if err != nil {
 		return Exchange{}, err
 	}
 	if balance < credits {
-		return Exchange{}, fmt.Errorf("%w: insufficient credits", ErrInvalidInput)
+		return Exchange{}, ErrInsufficientCredits
 	}
 
 	result, err := tx.ExecContext(ctx, `
@@ -189,19 +189,13 @@ func (s *Store) AcceptExchange(ctx context.Context, exchangeID int, userID int) 
 		return Exchange{}, err
 	}
 
-	balance, err := creditBalance(ctx, tx, row.RequesterID)
-	if err != nil {
-		return Exchange{}, err
-	}
-	if balance < row.Credits {
-		return Exchange{}, fmt.Errorf("%w: requester has insufficient credits", ErrInvalidInput)
-	}
-
-	if _, err := tx.ExecContext(ctx, `
-		INSERT INTO credit_transactions (user_id, exchange_id, montant, type)
-		VALUES (?, ?, ?, 'spend')
-	`, row.RequesterID, row.ID, -row.Credits); err != nil {
+	if _, err := changeCreditBalance(ctx, tx, row.RequesterID, -row.Credits); err != nil {
 		return Exchange{}, fmt.Errorf("block requester credits: %w", err)
+	}
+	if err := appendCreditTransaction(
+		ctx, tx, row.RequesterID, row.ID, -row.Credits, creditTransactionSpend,
+	); err != nil {
+		return Exchange{}, fmt.Errorf("journal credit block: %w", err)
 	}
 
 	if err := updateExchangeStatus(ctx, tx, row.ID, exchangeStatusAccepted); err != nil {
@@ -236,11 +230,20 @@ func (s *Store) CompleteExchange(ctx context.Context, exchangeID int, userID int
 		return Exchange{}, fmt.Errorf("%w: only accepted exchanges can be completed", ErrInvalidInput)
 	}
 
-	if _, err := tx.ExecContext(ctx, `
-		INSERT INTO credit_transactions (user_id, exchange_id, montant, type)
-		VALUES (?, ?, ?, 'earn')
-	`, row.OwnerID, row.ID, row.Credits); err != nil {
+	spentAmount, err := getExchangeCreditTransactionAmount(
+		ctx, tx, row.RequesterID, row.ID, creditTransactionSpend,
+	)
+	if err != nil {
+		return Exchange{}, err
+	}
+	credits := -spentAmount
+	if _, err := changeCreditBalance(ctx, tx, row.OwnerID, credits); err != nil {
 		return Exchange{}, fmt.Errorf("transfer credits to owner: %w", err)
+	}
+	if err := appendCreditTransaction(
+		ctx, tx, row.OwnerID, row.ID, credits, creditTransactionEarn,
+	); err != nil {
+		return Exchange{}, fmt.Errorf("journal credit transfer: %w", err)
 	}
 
 	if err := updateExchangeStatus(ctx, tx, row.ID, exchangeStatusCompleted); err != nil {
@@ -272,11 +275,20 @@ func (s *Store) CancelExchange(ctx context.Context, exchangeID int, userID int) 
 	}
 
 	if row.Status == exchangeStatusAccepted {
-		if _, err := tx.ExecContext(ctx, `
-			INSERT INTO credit_transactions (user_id, exchange_id, montant, type)
-			VALUES (?, ?, ?, 'refund')
-		`, row.RequesterID, row.ID, row.Credits); err != nil {
+		spentAmount, err := getExchangeCreditTransactionAmount(
+			ctx, tx, row.RequesterID, row.ID, creditTransactionSpend,
+		)
+		if err != nil {
+			return Exchange{}, err
+		}
+		credits := -spentAmount
+		if _, err := changeCreditBalance(ctx, tx, row.RequesterID, credits); err != nil {
 			return Exchange{}, fmt.Errorf("refund requester credits: %w", err)
+		}
+		if err := appendCreditTransaction(
+			ctx, tx, row.RequesterID, row.ID, credits, creditTransactionRefund,
+		); err != nil {
+			return Exchange{}, fmt.Errorf("journal credit refund: %w", err)
 		}
 	}
 
@@ -368,27 +380,6 @@ func ensureNoActiveExchange(ctx context.Context, tx *sql.Tx, serviceID int, exce
 		return fmt.Errorf("check active exchange: %w", err)
 	}
 	return fmt.Errorf("%w: service already has an active exchange", ErrConflict)
-}
-
-func creditBalance(ctx context.Context, tx *sql.Tx, userID int) (int, error) {
-	var balance int
-	if err := tx.QueryRowContext(ctx, `
-		SELECT u.credit_balance + COALESCE(SUM(
-			CASE ct.type
-				WHEN 'spend' THEN -ABS(ct.montant)
-				WHEN 'earn' THEN ABS(ct.montant)
-				WHEN 'refund' THEN ABS(ct.montant)
-				ELSE ct.montant
-			END
-		), 0)
-		FROM users u
-		LEFT JOIN credit_transactions ct ON ct.user_id = u.id
-		WHERE u.id = ?
-		GROUP BY u.id, u.credit_balance
-	`, userID).Scan(&balance); err != nil {
-		return 0, fmt.Errorf("read credit balance: %w", err)
-	}
-	return balance, nil
 }
 
 func updateExchangeStatus(ctx context.Context, tx *sql.Tx, id int, status string) error {

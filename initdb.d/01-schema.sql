@@ -66,15 +66,20 @@ CREATE TABLE IF NOT EXISTS exchanges (
 CREATE TABLE IF NOT EXISTS credit_transactions (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user_id INT NOT NULL,
-  exchange_id INT,
+  exchange_id INT NOT NULL,
   montant INT NOT NULL,
   type ENUM('earn', 'spend', 'refund') NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-  FOREIGN KEY (exchange_id) REFERENCES exchanges(id) ON DELETE SET NULL,
+  FOREIGN KEY (exchange_id) REFERENCES exchanges(id) ON DELETE CASCADE,
   INDEX idx_user_id (user_id),
   INDEX idx_exchange_id (exchange_id),
-  INDEX idx_type (type)
+  INDEX idx_type (type),
+  UNIQUE KEY unique_exchange_credit_operation (exchange_id, user_id, type),
+  CONSTRAINT chk_credit_transaction_amount CHECK (
+    (type = 'spend' AND montant < 0)
+    OR (type IN ('earn', 'refund') AND montant > 0)
+  )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Reviews table

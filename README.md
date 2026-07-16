@@ -16,10 +16,23 @@ Variables disponibles :
 - `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` : paramètres MySQL
 - `LOG_LEVEL` : niveau de log
 
+## Système de crédits
+
+Le solde disponible est stocké sur l'utilisateur et chaque mouvement est
+tracé dans `credit_transactions`, conformément aux types du sujet :
+
+- `spend` (montant négatif) : blocage des crédits lors de l'acceptation ;
+- `earn` (montant positif) : transfert à l'offreur lorsque l'échange est terminé ;
+- `refund` (montant positif) : restitution au demandeur lors d'une annulation.
+
+Le changement de statut, la mise à jour du solde et l'écriture du journal sont
+effectués dans une même transaction SQL. Le verrouillage de la ligne utilisateur
+empêche deux acceptations concurrentes de dépenser les mêmes crédits.
+
 ## Lancer avec Docker
 
 Le fichier `docker-compose.yml` crée 2 services :
-- **api** : serveur Go sur port 8080
+- **api** : serveur Go sur le port défini par `APP_PORT`
 - **db** : MySQL 8.4 sur port 3306
 
 Les fichiers SQL sont automatiquement exécutés :
@@ -32,7 +45,27 @@ docker compose up --build
 
 Test rapide :
 ```bash
-curl http://localhost:8080/healthz
+curl http://localhost:15001/healthz
+```
+
+Pour une base existante créée avant le système de crédits, appliquer une seule
+fois `migrations/001_credit_system.sql`. Une base Docker neuve utilise déjà le
+schéma à jour présent dans `initdb.d/01-schema.sql`.
+
+## Tests
+
+Les tests unitaires ne nécessitent pas de base de données :
+
+```bash
+go test -v -cover ./...
+```
+
+Les tests d'intégration couvrent le blocage, le transfert, le remboursement et
+deux acceptations concurrentes. Ils s'activent avec une base MySQL de test :
+
+```powershell
+$env:TEST_DB_DSN = "barter:barter@tcp(127.0.0.1:3307)/barterswap?parseTime=true&charset=utf8mb4"
+go test -v -run Integration ./...
 ```
 
 ## Vérifier les données en base

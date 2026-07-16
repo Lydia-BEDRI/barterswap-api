@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -33,7 +34,11 @@ func main() {
 
 	app := NewApp(NewStore(db))
 
-	addr := ":8080"
+	port := strings.TrimSpace(os.Getenv("APP_PORT"))
+	if port == "" {
+		port = "8080"
+	}
+	addr := ":" + port
 	log.Printf("listening on %s", addr)
 	if err := http.ListenAndServe(addr, app.Routes()); err != nil {
 		log.Fatalf("server error: %v", err)
