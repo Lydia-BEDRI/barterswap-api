@@ -56,6 +56,8 @@ func writeError(w http.ResponseWriter, err error) {
 		status = http.StatusConflict
 	case errors.Is(err, ErrConflict):
 		status = http.StatusConflict
+	case errors.Is(err, ErrInsufficientCredits):
+		status = http.StatusBadRequest
 	case errors.Is(err, ErrForbidden):
 		status = http.StatusForbidden
 	case errors.Is(err, ErrNotFound):

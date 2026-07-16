@@ -3,11 +3,11 @@
 SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 INSERT INTO users (pseudo, bio, ville, credit_balance) VALUES
-('alice', 'Développeuse passionnée', 'Paris', 10),
-('bob', 'Bricoleur amateur', 'Lyon', 10),
+('alice', 'Développeuse passionnée', 'Paris', 15),
+('bob', 'Bricoleur amateur', 'Lyon', 5),
 ('charlie', 'Professeur de musique', 'Marseille', 10),
 ('diane', 'Photographe', 'Toulouse', 10),
-('eve', 'Jardinière enthousiaste', 'Bordeaux', 10);
+('eve', 'Jardinière enthousiaste', 'Bordeaux', 6);
 
 INSERT INTO user_skills (user_id, nom, niveau) VALUES
 (1, 'Python', 'expert'),
@@ -40,10 +40,9 @@ INSERT INTO exchanges (service_id, requester_id, owner_id, status) VALUES
 (7, 2, 4, 'pending');
 
 INSERT INTO credit_transactions (user_id, exchange_id, montant, type) VALUES
-(2, 1, 5, 'spend'),
+(2, 1, -5, 'spend'),
 (1, 1, 5, 'earn'),
-(4, 3, 4, 'spend'),
-(3, 3, 4, 'earn');
+(5, 3, -4, 'spend');
 
 INSERT INTO reviews (exchange_id, author_id, target_id, note, commentaire) VALUES
 (1, 2, 1, 5, 'Excellent cours, très clair et pédagogue !'),
