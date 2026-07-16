@@ -23,6 +23,7 @@ func (a *App) Routes() http.Handler {
 	a.registerServiceRoutes(mux)
 	a.registerExchangeRoutes(mux)
 	a.registerReviewRoutes(mux)
+	a.registerStatsRoutes(mux)
 	return mux
 }
 
