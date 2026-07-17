@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -21,19 +23,24 @@ func main() {
 	}
 	defer db.Close()
 
-	if err := db.Ping(); err != nil {
-		log.Fatalf("db ping failed: %v", err)
+	for i := 0; i < 10; i++ {
+		if err := db.Ping(); err == nil {
+			log.Println("database connected")
+			break
+		}
+		log.Printf("db not ready, retrying... (%d/10)", i+1)
+		time.Sleep(2 * time.Second)
 	}
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte("\nok\n\n"))
-	})
+	app := NewApp(NewStore(db))
 
-	addr := ":8080"
+	port := strings.TrimSpace(os.Getenv("APP_PORT"))
+	if port == "" {
+		port = "8080"
+	}
+	addr := ":" + port
 	log.Printf("listening on %s", addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+	if err := http.ListenAndServe(addr, app.Routes()); err != nil {
 		log.Fatalf("server error: %v", err)
 	}
 }
