@@ -1,0 +1,917 @@
+{
+  "info": {
+    "_postman_id": "b0b1f2d3-8c6a-4f6f-9f8b-1b5b5d3b7f11",
+    "name": "BarterSwap API",
+    "description": "Collection Postman pour tester l'API BarterSwap.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /healthz",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/healthz",
+              "host": ["{{baseUrl}}"],
+              "path": ["healthz"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bootstrap",
+      "item": [
+        {
+          "name": "Create user Alice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pseudo\": \"alice\",\n  \"bio\": \"Developpeuse Go\",\n  \"ville\": \"Paris\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) {",
+                  "  pm.collectionVariables.set('userId', String(json.id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace Alice skills",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+                "raw": "[\n  {\n    \"nom\": \"Go\",\n    \"niveau\": \"intermédiaire\"\n  },\n  {\n    \"nom\": \"Cuisine\",\n    \"niveau\": \"débutant\"\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/skills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "skills"]
+            }
+          }
+        },
+        {
+          "name": "Create user Bob",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pseudo\": \"bob\",\n  \"bio\": \"Besoin d'aide sur des services\",\n  \"ville\": \"Lyon\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) {",
+                  "  pm.collectionVariables.set('otherUserId', String(json.id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Replace Bob skills",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[\n  {\n    \"nom\": \"Organisation\",\n    \"niveau\": \"expert\"\n  }\n]",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{otherUserId}}/skills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{otherUserId}}", "skills"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Alice",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Alice",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pseudo\": \"alice\",\n  \"bio\": \"Developpeuse Go senior\",\n  \"ville\": \"Paris\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Alice skills",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/skills",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "skills"]
+            }
+          }
+        },
+        {
+          "name": "Get Alice stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "stats"]
+            }
+          }
+        },
+        {
+          "name": "Get Alice reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/users/{{userId}}/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "users", "{{userId}}", "reviews"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "item": [
+        {
+          "name": "Create service",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titre\": \"Aide Go\",\n  \"description\": \"Bases du langage et bonnes pratiques\",\n  \"categorie\": \"Informatique\",\n  \"duree_minutes\": 90,\n  \"credits\": 4,\n  \"ville\": \"Paris\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "services"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) {",
+                  "  pm.collectionVariables.set('serviceId', String(json.id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "services"]
+            }
+          }
+        },
+        {
+          "name": "List services filtered",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/services?categorie=Informatique&ville=Paris&search=Go",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "services"],
+              "query": [
+                {
+                  "key": "categorie",
+                  "value": "Informatique"
+                },
+                {
+                  "key": "ville",
+                  "value": "Paris"
+                },
+                {
+                  "key": "search",
+                  "value": "Go"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get service",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "services", "{{serviceId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update service",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titre\": \"Aide Go avancee\",\n  \"description\": \"Revue de code et accompagnement\",\n  \"categorie\": \"Informatique\",\n  \"duree_minutes\": 120,\n  \"credits\": 5,\n  \"ville\": \"Paris\",\n  \"actif\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "services", "{{serviceId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete service",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "services", "{{serviceId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Services alias /services",
+      "item": [
+        {
+          "name": "List services alias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["services"]
+            }
+          }
+        },
+        {
+          "name": "Create service alias",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titre\": \"Aide Go alias\",\n  \"description\": \"Route /services pour test\",\n  \"categorie\": \"Informatique\",\n  \"duree_minutes\": 60,\n  \"credits\": 3,\n  \"ville\": \"Paris\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["services"]
+            }
+          }
+        },
+        {
+          "name": "Get service alias",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "{{serviceId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update service alias",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"titre\": \"Aide Go alias\",\n  \"description\": \"Route /services pour test\",\n  \"categorie\": \"Informatique\",\n  \"duree_minutes\": 75,\n  \"credits\": 4,\n  \"ville\": \"Paris\",\n  \"actif\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "{{serviceId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete service alias",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["services", "{{serviceId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exchanges",
+      "item": [
+        {
+          "name": "Create exchange",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service_id\": {{serviceId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.id) {",
+                  "  pm.collectionVariables.set('exchangeId', String(json.id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List exchanges",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges"]
+            }
+          }
+        },
+        {
+          "name": "List exchanges filtered",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges?status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get exchange",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges/{{exchangeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges", "{{exchangeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Accept exchange",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges/{{exchangeId}}/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges", "{{exchangeId}}", "accept"]
+            }
+          }
+        },
+        {
+          "name": "Complete exchange",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges/{{exchangeId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges", "{{exchangeId}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Review exchange",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": 5,\n  \"commentaire\": \"Tres bon echange\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges/{{exchangeId}}/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges", "{{exchangeId}}", "review"]
+            }
+          }
+        },
+        {
+          "name": "Reject exchange",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges/{{exchangeId}}/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges", "{{exchangeId}}", "reject"]
+            }
+          }
+        },
+        {
+          "name": "Cancel exchange",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/exchanges/{{exchangeId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "exchanges", "{{exchangeId}}", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exchanges alias /exchanges",
+      "item": [
+        {
+          "name": "Create exchange alias",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"service_id\": {{serviceId}}\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/exchanges",
+              "host": ["{{baseUrl}}"],
+              "path": ["exchanges"]
+            }
+          }
+        },
+        {
+          "name": "List exchanges alias",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/exchanges",
+              "host": ["{{baseUrl}}"],
+              "path": ["exchanges"]
+            }
+          }
+        },
+        {
+          "name": "Get exchange alias",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/exchanges/{{exchangeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["exchanges", "{{exchangeId}}"]
+            }
+          }
+        },
+        {
+          "name": "Accept exchange alias",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/exchanges/{{exchangeId}}/accept",
+              "host": ["{{baseUrl}}"],
+              "path": ["exchanges", "{{exchangeId}}", "accept"]
+            }
+          }
+        },
+        {
+          "name": "Complete exchange alias",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/exchanges/{{exchangeId}}/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["exchanges", "{{exchangeId}}", "complete"]
+            }
+          }
+        },
+        {
+          "name": "Review exchange alias",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": 5,\n  \"commentaire\": \"Tres bon echange\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/exchanges/{{exchangeId}}/review",
+              "host": ["{{baseUrl}}"],
+              "path": ["exchanges", "{{exchangeId}}", "review"]
+            }
+          }
+        },
+        {
+          "name": "Reject exchange alias",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{userId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/exchanges/{{exchangeId}}/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["exchanges", "{{exchangeId}}", "reject"]
+            }
+          }
+        },
+        {
+          "name": "Cancel exchange alias",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "X-UserID",
+                "value": "{{otherUserId}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/exchanges/{{exchangeId}}/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["exchanges", "{{exchangeId}}", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Get service reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/services/{{serviceId}}/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "services", "{{serviceId}}", "reviews"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "userId",
+      "value": "1"
+    },
+    {
+      "key": "otherUserId",
+      "value": "2"
+    },
+    {
+      "key": "serviceId",
+      "value": "1"
+    },
+    {
+      "key": "exchangeId",
+      "value": "1"
+    }
+  ]
+}
